@@ -28,7 +28,7 @@ services:
             - app
 
     db:
-        build: ./.docker/mysql
+        build: mysql:5.7
         container_name: db
         restart: always
         tty: true
