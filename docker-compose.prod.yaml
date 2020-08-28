@@ -3,7 +3,7 @@ version: '3'
 services:
 
     app:
-        build: Dockerfile.prod
+        build: ./Dockerfile.prod
         container_name: app
         volumes:
             - .:/var/www
