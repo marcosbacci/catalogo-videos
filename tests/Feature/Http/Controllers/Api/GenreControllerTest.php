@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Models\Genre;
+use App\Models\Category;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -32,20 +33,26 @@ class GenreControllerTest extends TestCase
 
     public function testInvalidationData()
     {
+        $category = factory(Category::class)->create();
         $response = $this->json('POST', route('genres.store', []));
 
         $response
             ->assertStatus(422)
             ->assertJsonValidationErrors(['name'])
+            ->assertJsonValidationErrors(['categories_id'])
             ->assertJsonMissingValidationErrors(['is_active'])
             ->assertJsonFragment([
-                \Lang::get('validation.required', ['attribute' => 'name'])
+                \Lang::get('validation.required', ['attribute' => 'name'])                
+            ])
+            ->assertJsonFragment([
+                \Lang::get('validation.required', ['attribute' => 'categories id'])
             ]);
 
 
         $response = $this->json('POST', route('genres.store', [
             'name' => str_repeat('a', 256),
-            'is_active' => 'a'
+            'is_active' => 'a',
+            'categories_id' => $category->id
         ]));
 
         $response
@@ -65,15 +72,20 @@ class GenreControllerTest extends TestCase
         $response
             ->assertStatus(422)
             ->assertJsonValidationErrors(['name'])
+            ->assertJsonValidationErrors(['categories_id'])
             ->assertJsonMissingValidationErrors(['is_active'])
             ->assertJsonFragment([
                 \Lang::get('validation.required', ['attribute' => 'name'])
+            ])
+            ->assertJsonFragment([
+                \Lang::get('validation.required', ['attribute' => 'categories id'])
             ]);
 
 
         $response = $this->json('PUT', route('genres.update', ['genre' => $genre->id]), [
             'name' => str_repeat('a', 256),
-            'is_active' => 'a'
+            'is_active' => 'a',
+            'categories_id' => $category->id
         ]);
 
         $response
@@ -89,8 +101,10 @@ class GenreControllerTest extends TestCase
 
     public function testStore()
     {
+        $category = factory(Category::class)->create();
         $response = $this->json('POST', route('genres.store'),[
-            'name' => 'teste'
+            'name' => 'teste',
+            'categories_id' => [$category->id]
         ]);
 
         $id = $response->json('id');
@@ -104,7 +118,8 @@ class GenreControllerTest extends TestCase
 
         $response = $this->json('POST', route('genres.store'), [
             'name' => 'teste',
-            'is_active' => false
+            'is_active' => false,
+            'categories_id' => [$category->id]
         ]);
 
         $response
@@ -116,12 +131,14 @@ class GenreControllerTest extends TestCase
 
     public function testUpdate()
     {
+        $category = factory(Category::class)->create();
         $genre = factory(Genre::class)->create([
             'is_active' => false
         ]);
         $response = $this->json('PUT', route('genres.update', ['genre' => $genre->id]),[
             'name' => 'teste',
-            'is_active' => true
+            'is_active' => true,
+            'categories_id' => [$category->id]
         ]);
 
         $id = $response->json('id');
