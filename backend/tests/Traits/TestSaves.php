@@ -2,6 +2,7 @@
 
 namespace Tests\Traits;
 
+use Facade\Ignition\DumpRecorder\Dump;
 use Illuminate\Foundation\Testing\TestResponse;
 
 trait TestSaves
