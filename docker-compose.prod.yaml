@@ -4,7 +4,7 @@ services:
 
     app:
         build: .
-        env:
+        environment:
             - GOOGLE_CLOUD_PROJECT_ID={GOOGLE_CLOUD_PROJECT_ID}
             - GOOGLE_CLOUD_KEY_FILE={GOOGLE_CLOUD_KEY_FILE}
             - GOOGLE_CLOUD_STORAGE_BUCKET={GOOGLE_CLOUD_STORAGE_BUCKET}
