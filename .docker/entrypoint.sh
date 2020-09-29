@@ -16,6 +16,6 @@ fi
 composer install
 php artisan key:generate
 php artisan migrate
-composer require superbalist/laravel-google-cloud-storage
+#composer require superbalist/laravel-google-cloud-storage
 
 php-fpm
