@@ -13,7 +13,7 @@ steps:
 
 - id: "Executar o docker-compose"
   name: 'gcr.io/$PROJECT_ID/docker-compose'
-  args: ['-f', 'docker-compose.yaml', 'up', '-d']
+  args: ['-f', 'docker-compose.yaml', 'up', '-d', '--build']
   env:
     - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
     - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
