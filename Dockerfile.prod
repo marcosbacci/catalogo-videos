@@ -41,5 +41,10 @@ RUN rm -rf /var/www/backend/html && ln -s public html
 
 USER www-data
 
+RUN composer install && \
+    php artisan config:cache && \
+    chmod -R 777 storage
+
+
 EXPOSE 9000
 ENTRYPOINT ["php-fpm"]
