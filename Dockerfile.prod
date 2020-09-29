@@ -35,11 +35,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 #RUN usermod -u 1000 www-data
 
-COPY ./backend /var/www
-
 WORKDIR /var/www
 
-RUN rm -rf /var/www/backend/html && ln -s public html
+RUN rm -rf /var/www/html && ln -s public html
 
 USER www-data
 
