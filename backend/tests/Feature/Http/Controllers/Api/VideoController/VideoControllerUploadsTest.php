@@ -5,73 +5,92 @@ namespace Tests\Feature\Http\Controllers\Api\VideoController;
 use Illuminate\Http\UploadedFile;
 use Tests\Traits\TestValidations;
 use Tests\Traits\TestUploads;
+use App\Models\Video;
 
 class VideoControllerUploadsTest extends BasicVideoControllerTestCase
 {
     use TestValidations, TestUploads;
 
-    // public function testInvalidationVideoField()
-    // {
-    //     $this->assertInvalidationFile('video_file', 'mp4', 12, 'minetypes', ['values' => 'video/mp4']);
-    // }
+    public function testInvalidationThumbField()
+    {
+        $this->assertInvalidationFile(
+            'thumb_file',
+            'jpg',
+            Video::THUMB_FILE_MAX_SIZE,
+            'validation.image');
+    }
 
-    // public function testStoreWithFiles()
-    // {
-    //     \Storage::fake();
-    //     $files = $this->getFiles();
+    public function testInvalidationBannerField()
+    {
+        $this->assertInvalidationFile(
+            'banner_file',
+            'jpg',
+            Video::BANNER_FILE_MAX_SIZE,
+            'validation.image');
+    }
 
-    //     $category = factory(Category::class)->create();
-    //     $genre = factory(Genre::class)->create();
-    //     $genre->categories()->sync($category->id);
+    public function testInvalidationTrailerField()
+    {
+        $this->assertInvalidationFile(
+            'trailer_file',
+            'mp4',
+            Video::TRAILER_FILE_MAX_SIZE,
+            'validation.mimetypes', ['values' => 'video/mp4']);
+    }
 
-    //     $response = $this->json(
-    //         'POST',
-    //         $this->routeStore(),
-    //         $this->sendData +
-    //         [
-    //             'categories_id' => [$category->id],
-    //             'genres_id' => [$genre->id]
-    //         ] +
-    //         $files
-    //     );
+    public function testInvalidationVideoField()
+    {
+        $this->assertInvalidationFile(
+            'video_file',
+            'mp4',
+            Video::VIDEO_FILE_MAX_SIZE,
+            'validation.mimetypes', ['values' => 'video/mp4']);
+    }
 
-    //     $response->assertStatus(201);
-    //     $id = $response->json('id');
-    //     foreach ($files as $file) {
-    //         \Storage::assertExists("$id/{$file->hashName()}");
-    //     }
-    // }
+    public function testStoreWithFiles()
+    {
+        \Storage::fake();
+        $files = $this->getFiles();
 
-    // public function testUpdateWithFiles()
-    // {
-    //     \Storage::fake();
-    //     $files = $this->getFiles();
+        $response = $this->json(
+            'POST',
+            $this->routeStore(),
+            $this->sendData +
+            $files
+        );
 
-    //     $category = factory(Category::class)->create();
-    //     $genre = factory(Genre::class)->create();
-    //     $genre->categories()->sync($category->id);
+        $response->assertStatus(201);
+        $id = $response->json('id');
+        foreach ($files as $file) {
+            \Storage::assertExists("$id/{$file->hashName()}");
+        }
+    }
 
-    //     $response = $this->json(
-    //         'PUT',
-    //         $this->routeUpdate(),
-    //         $this->sendData +
-    //         [
-    //             'categories_id' => [$category->id],
-    //             'genres_id' => [$genre->id]
-    //         ] +
-    //         $files
-    //     );
+    public function testUpdateWithFiles()
+    {
+        \Storage::fake();
+        $files = $this->getFiles();
 
-    //     $response->assertStatus(200);
-    //     $id = $response->json('id');
-    //     foreach ($files as $file) {
-    //         \Storage::assertExists("$id/{$file->hashName()}");
-    //     }
-    // }
+        $response = $this->json(
+            'PUT',
+            $this->routeUpdate(),
+            $this->sendData +
+            $files
+        );
+
+        $response->assertStatus(200);
+        $id = $response->json('id');
+        foreach ($files as $file) {
+            \Storage::assertExists("$id/{$file->hashName()}");
+        }
+    }
 
     protected function getFiles()
     {
         return [
+            // 'thumb_file' => UploadedFile::fake()->create("thumb_file.jpeg"),
+            // 'banner_file' => UploadedFile::fake()->create("banner_file.jpeg"),
+            // 'trailer_file' => UploadedFile::fake()->create("trailer_file.mp4"),
             'video_file' => UploadedFile::fake()->create("video_file.mp4")
         ];
     }

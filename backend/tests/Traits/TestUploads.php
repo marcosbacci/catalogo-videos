@@ -28,7 +28,7 @@ trait TestUploads
                 $field => $file
             ]);
 
-            $this->assertInvalidationFields($response, [$field], $rule, $ruleParams);
+            $this->assertInvalidationsFields($response, [$field], $rule, $ruleParams);
 
             $file = UploadedFile::fake()->create('$field.$extension')->size($maxSize + 1);
             $response = $this->json($route['method'], $route['route'], [
