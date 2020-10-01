@@ -3,13 +3,12 @@
 namespace Tests\Feature\Http\Controllers\Api\VideoController;
 
 use Illuminate\Http\UploadedFile;
-use Tests\Traits\TestValidations;
 use Tests\Traits\TestUploads;
 use App\Models\Video;
 
 class VideoControllerUploadsTest extends BasicVideoControllerTestCase
 {
-    use TestValidations, TestUploads;
+    use TestUploads;
 
     public function testInvalidationThumbField()
     {

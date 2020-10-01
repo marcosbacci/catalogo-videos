@@ -31,12 +31,12 @@ class UploadFileTest extends TestCase
         $this->assertCount(0, $this->obj->oldFiles);
     }
 
-    // public function testUploadFile()
-    // {
-    //     \Storage::fake();
-    //     $file = UploadedFile::fake()->create('video.mp4');
-    //     $this->obj->uploadFile($file);
-    //     \Storage::assertExists("1/{$file->hashName()}");
+    public function testUploadFile()
+    {
+        \Storage::fake();
+        $file = UploadedFile::fake()->create('video.mp4');
+        $this->obj->uploadFile($file);
+        \Storage::assertExists("1/{$file->hashName()}");
 
-    // }
+    }
 }
