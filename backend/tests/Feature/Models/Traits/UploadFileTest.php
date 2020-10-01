@@ -5,9 +5,12 @@ namespace Tests\Feature\Models\Traits;
 use Illuminate\Http\UploadedFile;
 use Tests\Stubs\Model\UploadFilesStub;
 use Tests\TestCase;
+use Tests\Traits\TestProd;
+use Tests\Traits\TestStorage;
 
 class UploadFileTest extends TestCase
 {
+    use TestStorage, TestProd;
     private $obj;
 
     protected function setUp(): void
