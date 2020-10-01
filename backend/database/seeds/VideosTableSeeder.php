@@ -13,6 +13,10 @@ class VideosTableSeeder extends Seeder
      */
     public function run()
     {
+        // $dir = \Storage::getDriver()->getAdapter()->getPathPrefix();
+        // \File::deleteDirectory($dir);
+
+        $self = $this;
         $genres = Genre::all();
         factory(\App\Models\Video::class, 100)
             ->create()

@@ -5,12 +5,9 @@ namespace Tests\Feature\Models\Traits;
 use Illuminate\Http\UploadedFile;
 use Tests\Stubs\Model\UploadFilesStub;
 use Tests\TestCase;
-use Tests\Traits\TestProd;
-use Tests\Traits\TestStorage;
 
 class UploadFileTest extends TestCase
 {
-    use TestStorage, TestProd;
     private $obj;
 
     protected function setUp(): void
@@ -34,12 +31,12 @@ class UploadFileTest extends TestCase
         $this->assertCount(0, $this->obj->oldFiles);
     }
 
-    public function testUploadFile()
-    {
-        \Storage::fake();
-        $file = UploadedFile::fake()->create('video.mp4');
-        $this->obj->uploadFile($file);
-        \Storage::assertExists("1/{$file->hashName()}");
+    // public function testUploadFile()
+    // {
+    //     \Storage::fake();
+    //     $file = UploadedFile::fake()->create('video.mp4');
+    //     $this->obj->uploadFile($file);
+    //     \Storage::assertExists("1/{$file->hashName()}");
 
-    }
+    // }
 }
