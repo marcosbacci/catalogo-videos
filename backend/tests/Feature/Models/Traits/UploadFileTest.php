@@ -5,15 +5,19 @@ namespace Tests\Feature\Models\Traits;
 use Illuminate\Http\UploadedFile;
 use Tests\Stubs\Model\UploadFilesStub;
 use Tests\TestCase;
+use Tests\Traits\TestStorage;
 
 class UploadFileTest extends TestCase
 {
+    use TestStorage;
     private $obj;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->obj = new UploadFilesStub();
+        \Config::set('filesystems.default', 'gcs');
+        $this->deleteAllFiles();
     }
 
     public function testMakeOldFielsOnSaving()
