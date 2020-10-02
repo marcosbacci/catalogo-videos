@@ -44,6 +44,7 @@ class VideosTableSeeder extends Seeder
                     )
                 );
             });
+        Model::unguard();
 
         // $genres = Genre::all();
         // factory(\App\Models\Video::class, 100)
@@ -58,5 +59,34 @@ class VideosTableSeeder extends Seeder
         //         $video->categories()->attach($categoriesId);
         //         $video->genres()->attach($subGenres->pluck('id')->toArray());
         //     });
+    }
+
+    public function fetchRelations()
+    {
+        $subGenres = $this->allGenres->random(5)->load('categories');
+        $categoriesId = [];
+        foreach ($subGenres as $genre) {
+            array_push($categoriesId, ...$genre->categories->pluck('id')->toArray());
+        }
+        $categoriesId = array_unique($categoriesId);
+        $genresId = $subGenres->pluck('id')->toArray();
+        $this->relations['categories_id'] = $categoriesId;
+        $this->relations['genres_id'] = $genresId;
+    }
+
+    public function getImageFile()
+    {
+        return new UploadedFile(
+            storage_path('faker/thumbs/Laravel Framework.png'),
+            'Laravel Framework.png'
+        );
+    }
+
+    public function getVideoFile()
+    {
+        return new UploadedFile(
+            storage_path('faker/videos/01-Como vai funcionar os uploads.mp4'),
+            '01-Como vai funcionar os uploads.mp4'
+        );
     }
 }

@@ -13,7 +13,7 @@ class UploadFilesUnitTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        \Config::set('filesystems.default', 'video_local');
+        \Illuminate\Support\Facades\Config::set('filesystems.default', 'video_local');
         $this->obj = new UploadFilesStub();
     }
 
