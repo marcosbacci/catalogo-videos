@@ -7,11 +7,11 @@ services:
             context: .
             dockerfile: Dockerfile.prod
         environment:
-            - GOOGLE_CLOUD_PROJECT_ID={GOOGLE_CLOUD_PROJECT_ID}
+            - GOOGLE_CLOUD_PROJECT_ID=curso-285120
             - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
-            - GOOGLE_CLOUD_STORAGE_BUCKET={GOOGLE_CLOUD_STORAGE_BUCKET}
-            - GOOGLE_CLOUD_STORAGE_API_URI={GOOGLE_CLOUD_STORAGE_API_URI}
-            - TESTING_PROD={TESTING_PROD}
+            - GOOGLE_CLOUD_STORAGE_BUCKET=curso-micro-videos
+            - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/curso-micro-videos
+            - TESTING_PROD=true
         container_name: app
         volumes:
             - ./backend:/var/www
