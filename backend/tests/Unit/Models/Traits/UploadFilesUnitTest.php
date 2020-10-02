@@ -5,15 +5,17 @@ namespace Tests\Unit\Models\Traits;
 use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\TestCase;
 use Tests\Stubs\Model\UploadFilesStub;
+use Tests\Traits\TestStorage;
 
 class UploadFilesUnitTest extends TestCase
 {
+    use TestStorage;
     private $obj;
 
     protected function setUp(): void
     {
         parent::setUp();
-        \Illuminate\Support\Facades\Config::set('filesystems.default', 'video_local');
+        \Illuminate\Support\Facades\Config::set('filesystems.default', 'gcs');
         $this->obj = new UploadFilesStub();
     }
 
@@ -50,17 +52,6 @@ class UploadFilesUnitTest extends TestCase
         \Storage::assertMissing("1/{$file->hashName()}");
     }
 
-    public function testDeleteFiles()
-    {
-        \Storage::fake();
-        $file1 = UploadedFile::fake()->create('video1.mp4');
-        $file2 = UploadedFile::fake()->create('video2.mp4');
-        $this->obj->uploadFiles([$file1, $file2]);
-        $this->obj->deleteFiles([$file1->hashName(), $file2]);
-        \Storage::assertMissing("1/{$file1->hashName()}");
-        \Storage::assertMissing("1/{$file2->hashName()}");
-    }
-
     public function testExctactFiles()
     {
         $attibutes = [];
@@ -73,5 +64,16 @@ class UploadFilesUnitTest extends TestCase
         $this->assertCount(1, $attibutes);
         $this->assertEquals(['file1' => 'test'], $attibutes);
         $this->assertCount(0, $files);
+    }
+
+    public function testDeleteFiles()
+    {
+        \Storage::fake();
+        $file1 = UploadedFile::fake()->create('video1.mp4');
+        $file2 = UploadedFile::fake()->create('video2.mp4');
+        $this->obj->uploadFiles([$file1, $file2]);
+        $this->obj->deleteFiles([$file1->hashName(), $file2]);
+        \Storage::assertMissing("1/{$file1->hashName()}");
+        \Storage::assertMissing("1/{$file2->hashName()}");
     }
 }

@@ -77,16 +77,16 @@ class VideosTableSeeder extends Seeder
     public function getImageFile()
     {
         return new UploadedFile(
-            storage_path('faker/thumbs/Laravel Framework.png'),
-            'Laravel Framework.png'
+            storage_path('faker/thumbs/avatar.png'),
+            'avatar.png'
         );
     }
 
     public function getVideoFile()
     {
         return new UploadedFile(
-            storage_path('faker/videos/01-Como vai funcionar os uploads.mp4'),
-            '01-Como vai funcionar os uploads.mp4'
+            storage_path('faker/videos/video.mp4'),
+            'video.mp4'
         );
     }
 }
