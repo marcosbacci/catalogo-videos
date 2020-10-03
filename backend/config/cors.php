@@ -22,17 +22,18 @@ return [
      * You can enable CORS for 1 or multiple paths.
      * Example: ['api/*']
      */
-    'paths' => [],
+    'paths' => ['*'],
 
     /*
     * Matches the request method. `['*']` allows all methods.
     */
-    //'allowed_methods' => explode(",", $origins),
+    'allowed_methods' => ['*'],
 
     /*
      * Matches the request origin. `['*']` allows all origins. Wildcards can be used, eg `*.mydomain.com`
      */
     'allowed_origins' => ['*'],
+    //'allowed_origins' => explode(",", $origins),
 
     /*
      * Patterns that can be used with `preg_match` to match the origin.

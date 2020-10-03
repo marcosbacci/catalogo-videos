@@ -13,6 +13,7 @@ class CategoryController extends BasicCrudController
     {
         $this->rules = [
             'name' => 'required|max:255',
+            'description' => 'nullable',
             'is_active' => 'boolean'
         ];
     }
@@ -32,13 +33,13 @@ class CategoryController extends BasicCrudController
         return $this->rules;
     }
 
-    protected function resource()
-    {
-        return CategoryResource::class;
-    }
-
     protected function resourceCollection()
     {
         return $this->resource();
+    }
+
+    protected function resource()
+    {
+        return CategoryResource::class;
     }
 }
