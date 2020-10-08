@@ -3,6 +3,8 @@ import {ButtonProps} from '@material-ui/core/Button';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import categoryHttp from '../../util/http/category-http';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from '../../util/vendor/yup';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -12,17 +14,28 @@ const useStyles = makeStyles((theme: Theme) => {
     }
 });
 
+const validationSchema = yup.object().shape({
+    name: yup.string()
+        .label("Nome")
+        .required()
+        .max(255),
+    is_active: yup.boolean()
+});
+
 export const Form = () => {
 
     const classes = useStyles();
 
     const buttonProps: ButtonProps = {
-        variant: "contained",
-        className: classes.submit
+        className: classes.submit,
+        color: "secondary",
+        variant: "contained"
     };
 
-    const {register, handleSubmit, getValues} = useForm({
+    const {register, handleSubmit, getValues, errors} = useForm({
+        resolver: yupResolver(validationSchema),
         defaultValues: {
+            name: '',
             is_active: true
         }
     });
@@ -40,7 +53,9 @@ export const Form = () => {
                 label="Nome"
                 fullWidth
                 variant={"outlined"}
-                inputRef={register}
+                inputRef={register()}
+                error={errors.name !== undefined}
+                helperText={errors.name && errors.name.message}
             />
             <TextField
                 name="description"

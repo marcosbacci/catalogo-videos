@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import categoryHttp from '../../util/http/category-http';
 import genreHttp from '../../util/http/genre-http';
 import { useEffect, useState } from 'react';
+//import * as yup from 'yup';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -14,20 +15,27 @@ const useStyles = makeStyles((theme: Theme) => {
     }
 });
 
+// const validationSchema = yup.object().shape({
+//     name: yup.string()
+//         .required()
+// });
+
 export const Form = () => {
 
     const classes = useStyles();
 
     const buttonProps: ButtonProps = {
-        variant: "outlined",
-        className: classes.submit
+        className: classes.submit,
+        color: "secondary",
+        variant: "contained"
     };
 
     const [categories, setCategories] = useState<any[]>([]);
 
     const {register, handleSubmit, getValues, setValue, watch} = useForm({
+        //validationSchema,
         defaultValues: {
-            categories_id: [""]
+            categories_id: []
         }
     });
 
@@ -54,7 +62,7 @@ export const Form = () => {
                 label="Nome"
                 fullWidth
                 variant={"outlined"}
-                inputRef={register}
+                inputRef={register()}
             />
             <TextField
                 select
@@ -65,9 +73,9 @@ export const Form = () => {
                 variant="outlined"
                 fullWidth
                 onChange={e => 
-                    setValue("categories_id", [e.target.value])
+                    setValue("categories_id", e.target.value as any)
                 }
-                //SelectProps={{multiple: true}}
+                SelectProps={{multiple: true}}
             >
                 <MenuItem value="" disabled>
                     <em>Selecione categorias</em>
