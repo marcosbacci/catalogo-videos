@@ -3,20 +3,22 @@
 namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\GenreController;
+use App\Http\Resources\GenreResource;
 use App\Models\Genre;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Traits\TestResources;
 use Tests\TestCase;
 use Tests\Traits\TestValidations;
 use Tests\Traits\TestSaves;
 
 class GenreControllerTest extends TestCase
 {
-    use DatabaseMigrations, TestValidations, TestSaves;
+    use DatabaseMigrations, TestValidations, TestSaves, TestResources;
 
     private $genre;
-    private $fieldsSerialized = [
+    private $serializedFields = [
         'id',
         'name',
         'is_active',
@@ -48,21 +50,19 @@ class GenreControllerTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJson([$this->genre->toArray()]);
+            ->assertJson([
+                'meta' => ['per_page' => 15]
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => $this->serializedFields
+                ],
+                'links' => [],
+                'meta' => []
+            ]);
 
-        // $response
-        //     ->assertStatus(200)
-        //     ->assertJsonStructure(
-        //         [
-        //             'data' => [
-        //                 '*' => $this->fieldsSerialized
-        //             ],
-        //             'meta' => [],
-        //             'links' => []
-        //         ]
-        //     );
-
-        // $response->assertResource($response, GenreResource::collection(collect([$this->genre])));
+        $resource = GenreResource::collection(collect([$this->genre]));
+        $this->assertResource($response, $resource);
     }
 
     public function testShow()
@@ -71,7 +71,13 @@ class GenreControllerTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJson($this->genre->toArray());
+            ->assertJsonStructure([
+                'data' => $this->serializedFields
+            ]);
+
+        $id = $response->json('data.id');
+        $resource = new GenreResource(Genre::find($id));
+        $this->assertResource($response, $resource);
     }
 
     public function testInvalidationData()

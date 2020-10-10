@@ -218,6 +218,7 @@
   array (
     'paths' => 
     array (
+      0 => '*',
     ),
     'allowed_methods' => 
     array (

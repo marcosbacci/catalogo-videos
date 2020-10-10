@@ -2,31 +2,37 @@
 
 namespace Tests\Feature\Http\Controllers\Api\VideoController;
 
+use App\Http\Resources\VideoResource;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
 use Tests\Traits\TestValidations;
+use Tests\Traits\TestResources;
 use Tests\Traits\TestSaves;
-use Illuminate\Support\Arr;
 
 class VideoControllerCrudTest extends BasicVideoControllerTestCase
 {
-    use TestValidations, TestSaves;
+    use TestValidations, TestSaves, TestResources;
 
     public function testIndex()
     {
         $response = $this->get(route('videos.index'));
         $response
-            ->assertStatus(200)
-            ->assertJson([$this->video->toArray()]);
+            ->assertStatus(200);
+
+        $resource = VideoResource::collection(collect([$this->video]));
+        $this->assertResource($response, $resource);
     }
 
     public function testShow()
     {
         $response = $this->get(route('videos.show', ['video' => $this->video->id]));
         $response
-            ->assertStatus(200)
-            ->assertJson($this->video->toArray());
+            ->assertStatus(200);
+
+        $id = $response->json('data.id');
+        $resource = new VideoResource(Video::find($id));
+        $this->assertResource($response, $resource);
     }
 
     public function testInvalidationRequired()
