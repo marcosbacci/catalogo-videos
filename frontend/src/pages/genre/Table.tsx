@@ -1,18 +1,43 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import MUIDataTable, { MUIDataTableColumn } from 'mui-datatables';
+import MUIDataTable from 'mui-datatables';
 import {httpVideo} from "../../util/http";
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
+import { IconButton, MuiThemeProvider } from '@material-ui/core';
+import { makeActionStyles, TableColumn } from '../../components/Table';
+import { Link } from 'react-router-dom';
+import EditIcon from '@material-ui/icons/Edit';
+import { BadgeNo, BadgeYes } from '../../components/Badge';
 
-const columnsDefinitions: MUIDataTableColumn[] = [
+const columnsDefinitions: TableColumn[] = [
+    {
+        name: "id",
+        label: "ID",
+        width: "30%",
+        options: {
+            sort: false
+        }
+    },
     {
         name: "name",
-        label: "Nome"
+        label: "Nome",
+        width: "23%"
+    },
+    {
+        name: "is_active",
+        label: "Ativo?",
+        width: "4%",
+        options: {
+            customBodyRender(value, tableMeta, updateValue) {
+                return value ? <BadgeYes/> : <BadgeNo/>;
+            }
+        }
     },
     {
         name: "categories",
         label: "Categorias",
+        width: "20%",
         options: {
             customBodyRender(value, tableMeta, updateValue) {
                 return value.map(value => value.name).join(', ');
@@ -22,9 +47,29 @@ const columnsDefinitions: MUIDataTableColumn[] = [
     {
         name: "created_at",
         label: "Criado em",
+        width: "10%",
         options: {
             customBodyRender(value, tableMeta, updateValue) {
             return <span>{format(parseISO(value), 'dd/MM/yyyy')}</span>
+            }
+        }
+    },
+    {
+        name: "action",
+        label: "Ações",
+        width: "13%",
+        options: {
+            sort: false,
+            customBodyRender: (value, tableMeta) => {
+                return (
+                    <IconButton
+                        color={'secondary'}
+                        component={Link}
+                        to={`/genres/${tableMeta.rowData[0]}/edit`}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                )
             }
         }
     }
@@ -45,13 +90,13 @@ const Table = (props: Props) => {
     }, []);
 
     return (
-        <div>
+        <MuiThemeProvider theme={makeActionStyles(columnsDefinitions.length - 1)}>
             <MUIDataTable
                 title="Listagem de categorias"
                 columns={columnsDefinitions}
                 data={data}
             />
-        </div>
+        </MuiThemeProvider>
     );
 };
 
