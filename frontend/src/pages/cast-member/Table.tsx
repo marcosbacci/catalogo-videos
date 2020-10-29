@@ -8,6 +8,8 @@ import { makeActionStyles, TableColumn } from '../../components/Table';
 import { IconButton, MuiThemeProvider } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import { Link } from 'react-router-dom';
+import castMemberHttp from '../../util/http/cast-member-http';
+import { CastMember } from '../../util/models';
 
 const CastMemberTypeMap = {
     1: 'Diretor',
@@ -77,7 +79,7 @@ const columnsDefinitions: TableColumn[] = [
 // ];
 type Props = {};
 const Table = (props: Props) => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<CastMember[]>([]);
     useEffect(() => {
         httpVideo.get('cast_members').then(
             response => setData(response.data.data)
@@ -90,6 +92,12 @@ const Table = (props: Props) => {
                     title="Listagem de membros de elenco"
                     columns={columnsDefinitions}
                     data={data}
+                    options={{
+                        onRowsDelete: (rowsDeleted) => {
+                            const idsToDelete = rowsDeleted.data.map(d => data[d.dataIndex].id);
+                            castMemberHttp.delete(idsToDelete);
+                        }
+                    }}
                 />
             </MuiThemeProvider>
     );

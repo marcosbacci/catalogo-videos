@@ -70,6 +70,8 @@ const columnsDefinitions: TableColumn[] = [
     }
 ];
 
+const rowPerPage = 15;
+const rowsPerPageOptions = [15, 25, 50];
 const Table = () => {
 
     const snackbar = useSnackbar();
@@ -87,9 +89,9 @@ const Table = () => {
         } = useFilter({
             columns: columnsDefinitions,
             debounceTime: 300,
-            rowPerPage: 10,
-            rowsPerPageOptions: [10, 25, 50]
-        });
+            rowPerPage,
+            rowsPerPageOptions
+        });   
 
     useEffect(() => {
         async function getData() {
@@ -152,7 +154,12 @@ const Table = () => {
                     searchText: filterState.search as any,
                     page: filterState.pagination.page - 1,
                     rowsPerPage: filterState.pagination.per_page,
+                    rowsPerPageOptions,
                     count: totalRecords,
+                    onRowsDelete: (rowsDeleted) => {
+                        const idsToDelete = rowsDeleted.data.map(d => data[d.dataIndex].id);
+                        categoryHttp.delete(idsToDelete);
+                    },
                     customToolbar: () => (
                         <FilterResetButton handleClick={() => {
                             dispatch(Creators.setReset());

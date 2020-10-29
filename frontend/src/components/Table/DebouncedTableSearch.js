@@ -32,11 +32,7 @@ const useStyles = makeStyles(
 var realizaConsulta;
 const TableSearch = ({ options, searchText, onSearch, onHide }) => {
   const classes = useStyles();
-
-  if (searchText && searchText.update) {
-    onHide();
-  }
-
+  
   const dispatchOnSearch = value => {
     clearTimeout(realizaConsulta);
     realizaConsulta = setTimeout(() => onSearch(value), 300);
@@ -53,6 +49,9 @@ const TableSearch = ({ options, searchText, onSearch, onHide }) => {
       onHide();
     }
   };
+
+  if (searchText && searchText.update)
+    onHide();
 
   return (
     <Grow appear in={true} timeout={300}>

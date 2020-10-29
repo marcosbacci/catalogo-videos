@@ -9,6 +9,8 @@ import { makeActionStyles, TableColumn } from '../../components/Table';
 import { Link } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
 import { BadgeNo, BadgeYes } from '../../components/Badge';
+import genreHttp from '../../util/http/genre-http';
+import { Genre } from '../../util/models';
 
 const columnsDefinitions: TableColumn[] = [
     {
@@ -82,7 +84,7 @@ const columnsDefinitions: TableColumn[] = [
 // ];
 type Props = {};
 const Table = (props: Props) => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<Genre[]>([]);
     useEffect(() => {
         httpVideo.get('genres').then(
             response => setData(response.data.data)
@@ -95,6 +97,12 @@ const Table = (props: Props) => {
                 title="Listagem de categorias"
                 columns={columnsDefinitions}
                 data={data}
+                options={{
+                    onRowsDelete: (rowsDeleted) => {
+                        const idsToDelete = rowsDeleted.data.map(d => data[d.dataIndex].id);
+                        genreHttp.delete(idsToDelete);
+                    }
+                }}
             />
         </MuiThemeProvider>
     );
