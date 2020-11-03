@@ -7,6 +7,7 @@ import { useDebounce } from "use-debounce";
 import { useHistory } from "react-router";
 import {History} from "history";
 import {isEqual} from "lodash";
+import { MuiDataTableRefComponent } from "../components/Table";
 
 
 interface FilterManagerOptions {
@@ -15,13 +16,21 @@ interface FilterManagerOptions {
     rowsPerPageOptions: number[];
     debounceTime: number;
     history: History;
+    tableRef: React.MutableRefObject<MuiDataTableRefComponent>;
+    extraFilter?: ExtraFilter;
+}
+
+interface ExtraFilter {
+    getStateFromURL: (queryParams: URLSearchParams) => any,
+    formatSearchParams: (debouncedState: FilterState) => any,
+    createValidationSchema: () => any
 }
 
 interface UseFilterOptions extends Omit<FilterManagerOptions, 'history'> {
-    columns: MUIDataTableColumn[];
-    rowPerPage: number;
-    rowsPerPageOptions: number[];
-    debounceTime: number;
+    // columns: MUIDataTableColumn[];
+    // rowPerPage: number;
+    // rowsPerPageOptions: number[];
+    // debounceTime: number;
 }
 
 export default function useFilter(options: UseFilterOptions) {
@@ -32,6 +41,7 @@ export default function useFilter(options: UseFilterOptions) {
     const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
     const [totalRecords, setTotalRecords] = useState<number>(0);
     filterManager.state = filterState;
+    // filterManager.debouncedState = debouncedFilterState;
     filterManager.dispatch = dispatch;
 
     filterManager.applyOrderInColumns();
@@ -62,13 +72,22 @@ export class FilterManager{
     rowPerPage: number;
     rowsPerPageOptions: number[];
     history: History;
+    tableRef: React.MutableRefObject<MuiDataTableRefComponent>;
+    extraFilter?: ExtraFilter;
 
     constructor(options: FilterManagerOptions) {
         this.columns = options.columns;
         this.rowPerPage = options.rowPerPage;
         this.rowsPerPageOptions = options.rowsPerPageOptions;
         this.history = options.history;
+        this.tableRef = options.tableRef;
+        this.extraFilter = options.extraFilter;
         this.createValidationSchema();
+    }
+
+    private resetTablePagination() {
+        this.tableRef.current.changeRowsPerPage(this.rowPerPage);
+        this.tableRef.current.changePage(0);
     }
 
     changeSearch(value) {
@@ -88,6 +107,22 @@ export class FilterManager{
             sort: changedColumn,
             dir: direction.includes('desc') ? 'desc' : 'asc'})
         );
+        this.resetTablePagination();
+    }
+
+    changeExtraFilter(data) {
+        this.dispatch(Creators.updateExtraFilter(data));
+    }
+
+    resetFilter() {
+        const INITIAL_STATE = {
+            ...this.schema.cast({}),
+            search: {value: null, update: true}
+        };
+        this.dispatch(Creators.setReset({
+            state: INITIAL_STATE
+        }));
+        this.resetTablePagination();
     }
 
     applyOrderInColumns() {
@@ -116,6 +151,7 @@ export class FilterManager{
             pathname: this.history.location.pathname,
             search: "?" + new URLSearchParams(this.formatSearchParams() as any),
             state: this.state
+            //state: this.debouncedState
         })
     }
 
@@ -125,6 +161,7 @@ export class FilterManager{
             search: "?" + new URLSearchParams(this.formatSearchParams() as any),
             state: {
                 ...this.state,
+                //...this.debouncedState,
                 search: this.clearSearchText(this.state.search)
             }
         };
@@ -144,6 +181,9 @@ export class FilterManager{
                     sort: this.state.order.sort,
                     dir: this.state.order.dir
                 }
+            ),
+            ...(
+                this.extraFilter && this.extraFilter.formatSearchParams(this.state)
             )
         }
     }
@@ -159,7 +199,12 @@ export class FilterManager{
             order: {
                 sort: queryParams.get('sort'),
                 dir: queryParams.get('dir')
-            }
+            },
+            ...(
+                this.extraFilter && {
+                    extraFilter: this.extraFilter.getStateFromURL(queryParams)
+                }
+            )
         });
     }
 
@@ -173,8 +218,9 @@ export class FilterManager{
                     .transform(value => isNaN(value) || parseInt(value) < 1 ? undefined : value)
                     .default(1),
                 per_page: yup.number()
-                    .oneOf(this.rowsPerPageOptions)
-                    .transform(value => isNaN(value) ? undefined : value)
+                    //.oneOf(this.rowsPerPageOptions)
+                    .transform(value => 
+                        isNaN(value) || !this.rowsPerPageOptions.includes(parseInt(value)) ? undefined : value)
                     .default(this.rowPerPage),
             }),
             order: yup.object().shape({
@@ -191,7 +237,12 @@ export class FilterManager{
                     .nullable()
                     .transform(value => !value || !['asc', 'desc'].includes(value.toLowerCase()) ? undefined : value)
                     .default(null)
-            })
+            }),
+            ...(
+                this.extraFilter && {
+                    extraFilter: this.extraFilter.createValidationSchema()
+                }
+            )
         });
     }
 }

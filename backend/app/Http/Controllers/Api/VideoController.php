@@ -17,15 +17,20 @@ class VideoController extends BasicCrudController
         $this->rules = [
             'title' => 'required|max:255',
             'description' => 'required',
-            'year_launched' => 'required|date_format:Y',
+            'year_launched' => 'required|date_format:Y|min:1',
             'opened' => 'boolean',
             'rating' => 'required|in:' . implode(',', Video::RATING_LIST),
-            'duration' => 'required|integer',
+            'duration' => 'required|integer|min:1',
             'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL',
             'genres_id' => [
                 'required',
                 'array',
                 'exists:genres,id,deleted_at,NULL'
+            ],
+            'cast_members_id' => [
+                'required',
+                'array',
+                'exists:cast_members,id,deleted_at,NULL'
             ],
             //'video_file' => 'required'
             'thumb_file' => 'image|max:' . Video::THUMB_FILE_MAX_SIZE,
@@ -42,10 +47,10 @@ class VideoController extends BasicCrudController
         $validatedData = $this->validate($request, $this->rulesStore());
         $obj = $this->model()::create($validatedData);
         $obj->refresh();
-        // $resource = $this->resource();
-        // return new $resource($obj);
+        $resource = $this->resource();
+        return new $resource($obj);
 
-        return $obj;
+        //return $obj;
     }
 
     // Sobreescreve o método
@@ -55,10 +60,10 @@ class VideoController extends BasicCrudController
         $this->addRuleIfGenresHasCategories($request);
         $validatedData = $this->validate($request, $this->rulesUpdate());
         $obj->update($validatedData);
-        // $resource = $this->resource();
-        // return new $resource($obj);
+        $resource = $this->resource();
+        return new $resource($obj);
 
-        return $obj;
+        //return $obj;
     }
 
     protected function addRuleIfGenresHasCategories(Request $request)

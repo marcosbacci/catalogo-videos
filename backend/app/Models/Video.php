@@ -91,6 +91,9 @@ class Video extends Model
         if (isset($attributes['genres_id'])) {
             $video->genres()->sync($attributes['genres_id']);
         }
+        if (isset($attributes['cast_members_id'])) {
+            $video->castMembers()->sync($attributes['cast_members_id']);
+        }
     }
 
     public function categories()
@@ -103,7 +106,32 @@ class Video extends Model
         return $this->belongsToMany(Genre::class)->withTrashed();
     }
 
+    public function castMembers()
+    {
+        return $this->belongsToMany(CastMember::class)->withTrashed();
+    }
+
     protected function uploadDir(){
         return $this->id;
     }
+
+    // public function getThumbFileUrlAttribute()
+    // {
+    //     return $this->thumb_file ? $this->getFileUrl($this->thumb_file) : null;
+    // }
+
+    // public function getBannerFileUrlAttribute()
+    // {
+    //     return $this->banner_file ? $this->getFileUrl($this->banner_file) : null;
+    // }
+
+    // public function getTrailerFileUrlAttribute()
+    // {
+    //     return $this->trailer_file ? $this->getFileUrl($this->trailer_file) : null;
+    // }
+
+    // public function getVideoFileUrlAttribute()
+    // {
+    //     return $this->video_file ? $this->getFileUrl($this->video_file) : null;
+    // }
 }
