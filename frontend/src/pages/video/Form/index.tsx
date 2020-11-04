@@ -14,6 +14,8 @@ import { RatingField } from './RatingField';
 import { UploadField } from './UploadField';
 import AsyncAutocomplete from '../../../components/AsyncAutocomplete';
 import genreHttp from '../../../util/http/genre-http';
+import GridSelectedItem from '../../../components/GridSelectedItem';
+import GridSelected from '../../../components/GridSelected';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -223,6 +225,9 @@ export const Form = () => {
                             label: "Gêneros"
                         }}
                     />
+                    <GridSelected>
+                        <GridSelectedItem onClick={() => {}} />
+                    </GridSelected>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <RatingField 
