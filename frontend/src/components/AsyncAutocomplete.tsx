@@ -1,22 +1,23 @@
 import * as React from 'react';
 import { CircularProgress, Omit, TextField, TextFieldProps } from '@material-ui/core';
-import { Autocomplete, AutocompleteProps } from '@material-ui/lab';
+import { Autocomplete, AutocompleteProps, UseAutocompleteSingleProps } from '@material-ui/lab';
 import { useEffect, useState } from 'react';
-import { useSnackbar } from 'notistack';
+import { useDebounce } from 'use-debounce/lib';
 
 interface AsyncAutocomploteProps {
     fetchOptions: (searchText) => Promise<any>;
+    debounceTime?: number;
     TextFieldProps?: TextFieldProps;
-    AutocompleteProps?: Omit<AutocompleteProps<any>, "renderInput">;
+    AutocompleteProps?: Omit<AutocompleteProps<any>, "renderInput"> & UseAutocompleteSingleProps<any>;
 }
 
 const AsyncAutocomplete: React.FC<AsyncAutocomploteProps> = (props) => {
 
-    const {AutocompleteProps} = props;
+    const {AutocompleteProps, debounceTime = 300} = props;
     const {freeSolo, onClose, onOpen, onInputChange} = AutocompleteProps as any;
-    const snackbar = useSnackbar();
     const [open, setOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [debouncedSearchText] = useDebounce(searchText, debounceTime);
     const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState([]);
 
@@ -72,22 +73,17 @@ const AsyncAutocomplete: React.FC<AsyncAutocomploteProps> = (props) => {
     [open]);
 
     useEffect(() => {
-        if(!open || (searchText === "" && freeSolo))
+        if(!open || (debouncedSearchText === "" && freeSolo))
             return;
 
         let isSubscribed = true;
         (async () => {
             setLoading(true);
             try {
-                const data = await props.fetchOptions(searchText);
+                const data = await props.fetchOptions(debouncedSearchText);
                 if (isSubscribed) {
                     setOptions(data);
                 }
-            } catch (error) {
-                snackbar.enqueueSnackbar(
-                    "Não foi possível carregar as informações",
-                    {variant: 'error'}
-                )
             } finally {
                 setLoading(false);
             }
@@ -98,7 +94,7 @@ const AsyncAutocomplete: React.FC<AsyncAutocomploteProps> = (props) => {
         }
     },
     // eslint-disable-next-line
-    [freeSolo ? searchText : open]);
+    [freeSolo ? debouncedSearchText : open]);
 
     return (
         <Autocomplete {...autocompleteProps}/>

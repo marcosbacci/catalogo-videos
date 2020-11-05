@@ -1,4 +1,4 @@
-import { Card, CardContent, Checkbox, FormControlLabel, Grid, makeStyles, TextField, Theme, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { Card, CardContent, Checkbox, FormControlLabel, FormHelperText, Grid, makeStyles, TextField, Theme, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import videoHttp from '../../../util/http/video-http';
@@ -12,10 +12,8 @@ import { DefaultForm } from '../../../components/DefaultForm';
 import { Video } from '../../../util/models';
 import { RatingField } from './RatingField';
 import { UploadField } from './UploadField';
-import AsyncAutocomplete from '../../../components/AsyncAutocomplete';
-import genreHttp from '../../../util/http/genre-http';
-import GridSelectedItem from '../../../components/GridSelectedItem';
-import GridSelected from '../../../components/GridSelected';
+import GenreField from './GenreField';
+import CategoryField from './CategoryField';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -62,7 +60,9 @@ export const Form = () => {
             thumb_file: '',
             banner_file: '',
             trailer_file: '',
-            video_file: ''
+            video_file: '',
+            genres: [],
+            categories: []
         }
     });
 
@@ -82,6 +82,8 @@ export const Form = () => {
         register({name: "video_file"});
         register({name: "rating"});
         register({name: "opened"});
+        register({name: "genres"});
+        register({name: "categories"});
     }, [register]);
 
     useEffect(() =>{
@@ -145,13 +147,6 @@ export const Form = () => {
         
     }
 
-    const fetchOptions = (searchText) => genreHttp.list({
-        queryParams: {
-            search: searchText, all: ""
-        }
-    }).then(({data}) => data.data);
-
-    
     return (
         <DefaultForm GridItemProps={{xs:12}} onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={5}>
@@ -215,19 +210,33 @@ export const Form = () => {
                     </Grid>
                     Elenco
                     <br/>
-                    <AsyncAutocomplete
-                        fetchOptions={fetchOptions}
-                        AutocompleteProps={{
-                            freeSolo: false,
-                            getOptionLabel: option => option.name
-                        }}
-                        TextFieldProps={{
-                            label: "Gêneros"
-                        }}
-                    />
-                    <GridSelected>
-                        <GridSelectedItem onClick={() => {}} />
-                    </GridSelected>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <GenreField
+                                genres={watch('genres')}
+                                setGenres={(value) => setValue('genres', value)}
+                                categories={watch('categories')}
+                                setCategories={(value) => setValue('categories', value)}
+                                error={errors.genres}
+                                disabled={loading}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <CategoryField
+                                categories={watch('categories')}
+                                setCategories={(value) => setValue('categories', value)}
+                                genres={watch('genres')}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormHelperText>
+                                Escolha os gêneros do vídeos
+                            </FormHelperText>
+                            <FormHelperText>
+                                Escolha pelo menos uma categoria de cada gênero
+                            </FormHelperText>
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <RatingField 

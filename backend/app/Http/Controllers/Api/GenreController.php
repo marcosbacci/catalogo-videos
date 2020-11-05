@@ -6,6 +6,7 @@ use App\Models\Genre;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BasicCrudController;
 use App\Http\Resources\GenreResource;
+use Illuminate\Database\Eloquent\Builder;
 
 class GenreController extends BasicCrudController
 {
@@ -33,10 +34,10 @@ class GenreController extends BasicCrudController
 
         $obj->refresh();
 
-        // $resource = $this->resource();
-        // return new $resource($obj);
+        $resource = $this->resource();
+        return new $resource($obj);
 
-        return $obj;
+        //return $obj;
     }
 
     // Sobreescreve o método
@@ -51,10 +52,10 @@ class GenreController extends BasicCrudController
             return $obj;
         });
 
-        // $resource = $this->resource();
-        // return new $resource($obj);
+        $resource = $this->resource();
+        return new $resource($obj);
 
-        return $obj;
+        // return $obj;
     }
 
     protected function handleRelations($genre, Request $request)
@@ -85,5 +86,10 @@ class GenreController extends BasicCrudController
     protected function resourceCollection()
     {
         return $this->resource();
+    }
+
+    protected function queryBuilder(): Builder
+    {
+        return parent::queryBuilder()->with('categories');
     }
 }
