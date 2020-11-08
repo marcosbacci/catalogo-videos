@@ -9,6 +9,7 @@ import * as yup from '../../util/vendor/yup';
 import { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
+import useSnackbarFormError from '../../hooks/useSnackbarFormError';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -31,13 +32,14 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const {register, handleSubmit, getValues, setValue, watch, errors, reset} = useForm({
+    const {register, handleSubmit, getValues, setValue, watch, errors, reset, formState} = useForm({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             name: '',
             categories_id: []
         }
     });
+    useSnackbarFormError(formState.submitCount, errors);
 
     const classes = useStyles();
     const snackbar = useSnackbar();

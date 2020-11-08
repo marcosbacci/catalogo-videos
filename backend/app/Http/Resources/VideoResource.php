@@ -10,7 +10,7 @@ class VideoResource extends JsonResource
     {
         return parent::toArray($request) + [
             'categories' => CategoryResource::collection($this->categories),
-            'genres' => GenreResource::collection($this->genres),
+            'genres' => GenreResource::collection($this->genres->load('categories')),
             'cast_members' => CastMemberResource::collection($this->castMembers),
             'thumb_file_url' => $this->thumb_file_url,
             'banner_file_url' => $this->banner_file_url,

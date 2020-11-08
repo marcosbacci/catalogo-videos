@@ -1,15 +1,16 @@
 import { InputAdornment, TextField, TextFieldProps } from '@material-ui/core';
 //import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import * as React from 'react';
-import { MutableRefObject, useImperativeHandle, useRef, useState } from 'react';
+import { MutableRefObject, RefAttributes, useImperativeHandle, useRef, useState } from 'react';
 
-export interface InputFileProps {
+export interface InputFileProps extends RefAttributes<InputFileComponent> {
     ButtonFile: React.ReactNode;
     InputFileProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
     TextFieldProps?: TextFieldProps;
 }
 
 export interface InputFileComponent {
+    clear(): void;
     openWindow: () => void;
 }
 
@@ -51,6 +52,7 @@ const InputFile = React.forwardRef<InputFileComponent, InputFileProps>((props, r
     };
 
     useImperativeHandle(ref, () => ({
+        clear: () => setFileName(""),
         openWindow: () => fileRef.current.click()
     }));
 

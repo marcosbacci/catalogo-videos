@@ -8,6 +8,7 @@ import * as yup from '../../util/vendor/yup';
 import { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
+import useSnackbarFormError from '../../hooks/useSnackbarFormError';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -29,7 +30,7 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const {register, handleSubmit, getValues, setValue, errors, reset, watch} = useForm({resolver: yupResolver(validationSchema)});
+    const {register, handleSubmit, getValues, setValue, errors, reset, watch, formState} = useForm({resolver: yupResolver(validationSchema)});
 
     const classes = useStyles();
     const snackbar = useSnackbar();
@@ -44,6 +45,7 @@ export const Form = () => {
         variant: "contained",
         disabled: loading
     };
+    useSnackbarFormError(formState.submitCount, errors);
 
     useEffect(() =>{
         if (!id)

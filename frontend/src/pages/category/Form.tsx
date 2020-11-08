@@ -9,6 +9,7 @@ import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
 import SubmitActions from '../../components/SubmitActions';
 import { DefaultForm } from '../../components/DefaultForm';
+import useSnackbarFormError from '../../hooks/useSnackbarFormError';
 
 const validationSchema = yup.object().shape({
     name: yup.string()
@@ -20,13 +21,14 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const {register, handleSubmit, getValues, setValue, errors, reset, watch, trigger} = useForm({
+    const {register, handleSubmit, getValues, setValue, errors, reset, watch, trigger, formState} = useForm({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             name: '',
             is_active: true
         }
     });
+    useSnackbarFormError(formState.submitCount, errors);
 
     const snackbar = useSnackbar();
     const history = useHistory();
