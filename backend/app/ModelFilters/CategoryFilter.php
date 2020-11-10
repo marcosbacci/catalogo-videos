@@ -20,4 +20,9 @@ class CategoryFilter extends DefaultModelFilter
             $query->whereIn('id', $ids);
         });
     }
+
+    public function isActive($is_active)
+    {
+        $this->where('is_active', $is_active);
+    }
 }

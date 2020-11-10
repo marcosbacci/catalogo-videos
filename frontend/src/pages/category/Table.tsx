@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
 import useFilter from '../../hooks/useFilter';
+import * as yup from '../../util/vendor/yup';
+import { State } from '../../store/filter/types';
 
 const columnsDefinitions: TableColumn[] = [
     {
@@ -101,8 +103,35 @@ const Table = () => {
             debounceTime: 300,
             rowPerPage,
             rowsPerPageOptions,
-            tableRef
-        });   
+            tableRef,
+            extraFilter: {
+                createValidationSchema: () => {
+                    return yup.object().shape({
+                        is_active: yup.string()
+                            .nullable()
+                            .default(null)
+                    })
+                },
+                formatSearchParams: (debouncedState: State) => {
+                    return debouncedState.extraFilter ? {
+                        ...(
+                            debouncedState.extraFilter.is_active &&
+                            {is_active: debouncedState.extraFilter.is_active}
+                        )
+                    } : undefined
+                },
+                getStateFromURL: (queryParams) => {
+                    return {
+                        is_active: queryParams.get('is_active')
+                    }
+                }
+            }
+        });
+
+    const indexColumnType = columns.findIndex(c => c.name === 'is_active');
+    const columnType = columns[indexColumnType];
+    const is_activeFilterValue = filterState.extraFilter && filterState.extraFilter.is_active as never;
+    (columnType.options as any).filterList = is_activeFilterValue ? [is_activeFilterValue] : [];
 
     useEffect(() => {
         async function getData() {
@@ -114,7 +143,12 @@ const Table = () => {
                         page: filterState.pagination.page,
                         per_page: filterState.pagination.per_page,
                         sort: filterState.order.sort,
-                        dir: filterState.order.dir
+                        dir: filterState.order.dir,
+                        ...(
+                            debouncedFilterState.extraFilter &&
+                            debouncedFilterState.extraFilter.is_active &&
+                            {is_active: debouncedFilterState.extraFilter.is_active === 'Sim' ? 1 : 0}
+                        )
                     }
                 });
                 if (subscribed.current) {
@@ -149,7 +183,9 @@ const Table = () => {
         filterManager.clearSearchText(debouncedFilterState.search),
         debouncedFilterState.pagination.page,
         debouncedFilterState.pagination.per_page,
-        debouncedFilterState.order
+        debouncedFilterState.order,
+        // eslint-disable-next-line
+        JSON.stringify(debouncedFilterState.extraFilter)
     ]);
 
     return (
@@ -168,6 +204,12 @@ const Table = () => {
                     rowsPerPage: filterState.pagination.per_page,
                     rowsPerPageOptions,
                     count: totalRecords,
+                    onFilterChange: (column: string, filterList: any, type) => {
+                        const columnIndex = columns.findIndex(c => c.name === column);
+                        filterManager.changeExtraFilter({
+                            [column]: filterList[columnIndex].length ? filterList[columnIndex][0] : null
+                        })
+                    },
                     onRowsDelete: (rowsDeleted) => {
                         const idsToDelete = rowsDeleted.data.map(d => data[d.dataIndex].id);
                         categoryHttp.delete(idsToDelete);
