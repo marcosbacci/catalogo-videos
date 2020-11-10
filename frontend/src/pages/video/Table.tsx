@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { ListResponse, Video } from '../../util/models';
@@ -13,6 +13,7 @@ import useFilter from '../../hooks/useFilter';
 import videoHttp from '../../util/http/video-http';
 import DeleteDialog from '../../components/DeleteDialog';
 import useDeleteCollection from '../../hooks/useDeleteCollection';
+import LoadingContext from '../../components/Loading/LoadingContext';
 
 const columnsDefinitions: TableColumn[] = [
     {
@@ -96,7 +97,7 @@ const Table = () => {
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
     const [data, setData] = useState<Video[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const loading = useContext(LoadingContext);
     const {openDeleteDialog, setOpenDeleteDialog, rowsToDelete, setRowsToDelete} = useDeleteCollection();
     const tableRef = useRef() as React.MutableRefObject<MuiDataTableRefComponent>;
 
@@ -116,7 +117,6 @@ const Table = () => {
         });   
 
     async function getData() {
-        setLoading(true);
         try {
             const {data} = await videoHttp.list<ListResponse<Video>>({
                 queryParams: {
@@ -142,8 +142,6 @@ const Table = () => {
                 'Não foi possível buscar os vídeos',
                 {variant: 'error'}
             );
-        } finally {
-            setLoading(false);
         }
     }
 

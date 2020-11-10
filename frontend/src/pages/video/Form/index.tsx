@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import videoHttp from '../../../util/http/video-http';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../../util/vendor/yup';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
 import SubmitActions from '../../../components/SubmitActions';
@@ -21,6 +21,7 @@ import { InputFileComponent } from '../../../components/InputFile';
 import { createRef } from 'react';
 import { omit, zipObject } from 'lodash';
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError';
+import LoadingContext from '../../../components/Loading/LoadingContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -106,7 +107,7 @@ export const Form = () => {
     const history = useHistory();
     const {id} = useParams();
     const [video, setVideo] = useState<Video | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const loading = useContext(LoadingContext);
     const theme = useTheme();
     const isGreaterMd = useMediaQuery(theme.breakpoints.up('md'));
     const castMemberRef = useRef() as MutableRefObject<CastMemberFieldComponent>;
@@ -134,7 +135,6 @@ export const Form = () => {
 
         let isSubcribed = true;
         (async () => {
-            setLoading(true);
             try {
                 const {data} = await videoHttp.get(id);
                 if (isSubcribed) {
@@ -147,8 +147,6 @@ export const Form = () => {
                     "Não foi possível carregar as informações",
                     {variant: "error"}
                 )
-            } finally {
-                setLoading(false);
             }
         })();
 
@@ -160,13 +158,11 @@ export const Form = () => {
     []);
 
     async function onSubmit(formData, event) {
-        console.log(formData);
         const sendData = omit(formData, ['cast_members', 'genres', 'categories']);
         sendData['cast_members_id'] = formData['cast_members'].map(cast_member => cast_member.id);
         sendData['categories_id'] = formData['categories'].map(category => category.id);
         sendData['genres_id'] = formData['genres'].map(genre => genre.id);
 
-        setLoading(true);
         try {
             const http = !video
             ? videoHttp.create(sendData)
@@ -190,10 +186,7 @@ export const Form = () => {
                 'Não foi possível salvar o vídeo',
                 {variant: 'error'}
             );
-        } finally {
-            setLoading(false);
         }
-        
     }
 
     function resetForm(data) {
