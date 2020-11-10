@@ -11,7 +11,9 @@ const useSnackbarFormError = (submitCount, errors) => {
                 {variant: 'error'}
             )
         }
-    }, [submitCount])
+    },
+    // eslint-disable-next-line
+    [submitCount])
 };
 
 export default useSnackbarFormError;
