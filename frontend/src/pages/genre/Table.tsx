@@ -40,6 +40,7 @@ const columnsDefinitions: TableColumn[] = [
         label: "Ativo?",
         width: "4%",
         options: {
+            filter: false,
             // filterOptions: {
             //     names: ['Sim', 'Não']
             // },
