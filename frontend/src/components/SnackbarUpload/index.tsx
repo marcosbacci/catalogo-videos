@@ -4,6 +4,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
+import classnames from 'classnames';
+import UploadItem from './UploadItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
     card: {
@@ -20,6 +22,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     icons: {
         marginLeft: 'auto !important',
         color: theme.palette.primary.contrastText
+    },
+    expand: {
+        transform: 'rotate(0deg)',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest
+        })
+    },
+    expandOpen: {
+        transform: 'rotate(180deg)',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest
+        })
+    },
+    list: {
+        paddingTop: 0,
+        paddingBottom: 0
     }
 }));
 
@@ -41,7 +59,11 @@ const SnackbarUpload = React.forwardRef<any, SnackbarUploadProps>((props, ref) =
                     Fazendo upload de 10 vídeo(s)
                 </Typography>
                 <div className={classes.icons}>
-                    <IconButton color={'inherit'} onClick={() => setExpanded(!expanded)} >
+                    <IconButton
+                        color={'inherit'}
+                        onClick={() => setExpanded(!expanded)}
+                        className={classnames(classes.expand, {[classnames.expandOpen] : !expand})}
+                    >
                         <ExpandMoreIcon />
                     </IconButton>
                     <IconButton color={'inherit'} onClick={() => closeSnackbar(id)}>
@@ -50,8 +72,8 @@ const SnackbarUpload = React.forwardRef<any, SnackbarUploadProps>((props, ref) =
                 </div>
             </CardActions>
             <Collapse in={expanded}>
-                <List>
-                    Items
+                <List className={classes.list}>
+                    <UploadItem />
                 </List>
             </Collapse>
         </Card>
