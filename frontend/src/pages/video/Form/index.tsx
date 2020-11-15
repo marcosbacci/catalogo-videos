@@ -22,6 +22,9 @@ import { createRef } from 'react';
 import { omit, zipObject } from 'lodash';
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError';
 import LoadingContext from '../../../components/Loading/LoadingContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { State as UploadState, Upload } from '../../../store/upload/types';
+import { Creators } from '../../../store/upload';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -116,6 +119,24 @@ export const Form = () => {
     const uploadsRef = useRef(
             zipObject(fileFields, fileFields.map(() => createRef()))
         ) as MutableRefObject<{[key: string]: MutableRefObject<InputFileComponent>}>;
+
+    const uploads = useSelector<UploadState, Upload[]>((state) => state.uploads);
+    const dispatch = useDispatch();
+
+    setTimeout(() => {
+        const obj: any = {
+            video: {
+                id: '1',
+                title: 'e o vento levou'
+            },
+            files: [
+                {file: new File([""], "teste.mp4")}
+            ]
+        };
+        dispatch(Creators.addUpload(obj));
+    }, 1000);
+
+    console.log(uploads);
 
     useEffect(() => {
         register({name: "thumb_file"});
