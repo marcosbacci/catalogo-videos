@@ -62,7 +62,7 @@ const SnackbarUpload = React.forwardRef<any, SnackbarUploadProps>((props, ref) =
                     <IconButton
                         color={'inherit'}
                         onClick={() => setExpanded(!expanded)}
-                        className={classnames(classes.expand, {[classnames.expandOpen] : !expand})}
+                        className={classnames(classes.expand, {[classnames.expandOpen] : !expanded})}
                     >
                         <ExpandMoreIcon />
                     </IconButton>

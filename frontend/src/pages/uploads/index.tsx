@@ -1,4 +1,4 @@
-import { Card, CardContent, Divider, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, List, List, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Card, CardContent, Divider, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, List, makeStyles, Theme, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { Page } from '../../components/Page';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';

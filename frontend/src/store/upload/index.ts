@@ -1,5 +1,6 @@
-import { createActions, createReducer } from "reduxsauce";
 import * as Typings from "./types";
+import { createActions, createReducer } from "reduxsauce";
+import update from "immutability-helper";
 
 export const {Types, Creators} = createActions <{
     ADD_UPLOAD: string,
@@ -30,9 +31,15 @@ function addUpload(state = INITIAL_STATE, action: Typings.AddUploadAction): Typi
         return state;
     }
 
+    const uploads = index === -1
+        ? state.uploads
+        : update(state.uploads, {
+            $splice: [[index, 1]]
+        });
+
     return {
         uploads: [
-            ...state.uploads,
+            ...uploads,
             {
                 video: action.payload.video,
                 progress: 0,
