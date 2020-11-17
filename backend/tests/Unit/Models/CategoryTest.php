@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\Category;
 use App\Models\Traits\Uuid;
+use EloquentFilter\Filterable;
 use PHPUnit\Framework\TestCase;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -24,7 +25,7 @@ class CategoryTest extends TestCase
 
     public function testIfUseTraits()
     {
-        $traits = [SoftDeletes::class, Uuid::class];
+        $traits = [SoftDeletes::class, Uuid::class, Filterable::class];
         $categoryTraits = array_keys(class_uses(Category::class));
         $this->assertEquals($traits, $categoryTraits);
     }

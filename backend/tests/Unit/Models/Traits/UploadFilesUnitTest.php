@@ -73,4 +73,9 @@ class UploadFilesUnitTest extends TestCase
     //     \Storage::assertMissing("1/{$file1->hashName()}");
     //     \Storage::assertMissing("1/{$file2->hashName()}");
     // }
+
+    public function teste()
+    {
+        $this->assertTrue(true);
+    }
 }
