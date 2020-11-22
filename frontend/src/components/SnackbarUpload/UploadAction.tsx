@@ -1,54 +1,76 @@
-import { Divider, Fade, IconButton, makeStyles, Theme } from '@material-ui/core';
+import { Fade, IconButton, ListItemSecondaryAction, makeStyles, Theme } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import {Link} from 'react-router-dom';
+import { Upload } from '../../store/upload/types';
+import { useDispatch } from 'react-redux';
+import { Creators } from '../../store/upload';
 import * as React from 'react';
+import { hasError, isFinished } from '../../store/upload/getters';
+import { useEffect, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 
 const useStyles = makeStyles((theme: Theme) => ({
     successIcon: {
-        color: theme.palette.success.main,
-        marginLeft: theme.spacing(1)
+        color: theme.palette.success.main
     },
     erroIcon: {
-        color: theme.palette.error.main,
-        marginLeft: theme.spacing(1)
+        color: theme.palette.error.main
     },
-    divider: {
-        height: '20px',
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1)
+    deleteIcon: {
+        color: theme.palette.primary.main
     }
 }));
 
 interface UploadActionProps {
-    
+    upload: Upload;
+    hover: boolean;
 }
 
 const UploadAction : React.FC<UploadActionProps> = (props) => {
-
+    const {upload, hover} = props;
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const error = hasError(upload);
+    const [show, setShow] = useState(false);
+    const [debouncedShow] = useDebounce(show, 2500);
+    
+    useEffect(() => {
+        setShow(isFinished(upload));
+    }, [upload]);
 
     return (
-        <Fade in={true} timeout={{enter: 1000}}>
-            <>
-                <CheckCircleIcon className={classes.successIcon} />
-                <ErrorIcon className={classes.erroIcon} />
-                <>
-                    <Divider className={classes.divider} orientation="vertical" />
-                    <IconButton>
-                        <DeleteIcon color={"primary"} />
-                    </IconButton>
-                    <IconButton
-                        component={Link}
-                        to="/videos/uuid/edit"
-                    >
-                        <EditIcon color={"primary"} />
-                    </IconButton>
-                </>
-            </>
-        </Fade>
+        debouncedShow
+            ? (<Fade in={show} timeout={{enter: 1000}}>
+                <ListItemSecondaryAction>
+                    <span hidden={hover}>
+                        {
+                            upload.progress === 1 && !error && (
+                                <IconButton className={classes.successIcon} edge={'end'}>
+                                    <CheckCircleIcon />
+                                </IconButton>
+                            )
+                        }
+                        {
+                            error && (
+                                <IconButton className={classes.erroIcon} edge={'end'}>
+                                    <ErrorIcon />
+                                </IconButton>
+                            )
+                        }
+                    </span>
+                    <span hidden={!hover}>
+                        <IconButton
+                            color={'primary'}
+                            edge={'end'}
+                            onClick={() => dispatch(Creators.removeUpload({id: upload.video.id}))}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </span>
+                </ListItemSecondaryAction>
+            </Fade>)
+            : null
     );
 };
 

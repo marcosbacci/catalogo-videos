@@ -1,51 +1,80 @@
-import { Fade, IconButton, ListItemSecondaryAction, makeStyles, Theme } from '@material-ui/core';
+import { Divider, Fade, IconButton, makeStyles, Theme } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import {Link} from 'react-router-dom';
+import { FileUpload, Upload } from '../../store/upload/types';
+import { useDispatch } from 'react-redux';
+import { Creators } from '../../store/upload';
 import * as React from 'react';
+import { hasError, isFinished, isUploadType } from '../../store/upload/getters';
+import { useEffect, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 
 const useStyles = makeStyles((theme: Theme) => ({
     successIcon: {
-        color: theme.palette.success.main
+        color: theme.palette.success.main,
+        marginLeft: theme.spacing(1)
     },
     erroIcon: {
-        color: theme.palette.error.main
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(1)
     },
-    deleteIcon: {
-        color: theme.palette.primary.main
+    divider: {
+        height: '20px',
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1)
     }
 }));
 
 interface UploadActionProps {
-    
+    uploadOrFile: Upload | FileUpload;
 }
 
 const UploadAction : React.FC<UploadActionProps> = (props) => {
-
+    const {uploadOrFile} = props;
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const [show, setShow] = useState(false);
+    const [debouncedShow] = useDebounce(show, 2500);
+    const error = hasError(uploadOrFile);
+    const videoId = (uploadOrFile as any).video?.id;
+    const activeActions = isUploadType(uploadOrFile);
+
+    useEffect(() => {
+        setShow(isFinished(uploadOrFile));
+    }, [uploadOrFile]);
 
     return (
-        <Fade in={true} timeout={{enter: 1000}}>
-            <ListItemSecondaryAction>
-                <span>
+        debouncedShow
+            ? (<Fade in={show} timeout={{enter: 1000}}>
+                <>
                     {
-                        <IconButton className={classes.successIcon} edge={'end'}>
-                            <CheckCircleIcon />
-                        </IconButton>
+                        uploadOrFile.progress === 1 &&
+                        !error &&
+                        <CheckCircleIcon className={classes.successIcon} />
                     }
-                    {
-                        <IconButton className={classes.erroIcon} edge={'end'}>
-                            <ErrorIcon />
-                        </IconButton>
+                    { error && <ErrorIcon className={classes.erroIcon} />}
+                    { activeActions &&
+                        (<>
+                            <Divider className={classes.divider} orientation="vertical" />
+                            <IconButton
+                                onClick={() => dispatch(Creators.removeUpload({id: videoId}))}
+                            >
+                                <DeleteIcon color={"primary"} />
+                            </IconButton>
+                            <IconButton
+                                component={Link}
+                                to={`/videos/${videoId}/edit`}
+                            >
+                                <EditIcon color={"primary"} />
+                            </IconButton>
+                        </>)
                     }
-                </span>
-                <span>
-                    <IconButton className={classes.deleteIcon} edge={'end'}>
-                        <DeleteIcon />
-                    </IconButton>
-                </span>
-            </ListItemSecondaryAction>            
-        </Fade>
+                </>
+            </Fade>)
+            : null
     );
 };
 

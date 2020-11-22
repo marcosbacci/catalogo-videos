@@ -23,8 +23,9 @@ import { omit, zipObject } from 'lodash';
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError';
 import LoadingContext from '../../../components/Loading/LoadingContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { State as UploadState, Upload } from '../../../store/upload/types';
+import { FileInfo, Upload, UploadModule } from '../../../store/upload/types';
 import { Creators } from '../../../store/upload';
+import SnackbarUpload from '../../../components/SnackbarUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -120,7 +121,7 @@ export const Form = () => {
             zipObject(fileFields, fileFields.map(() => createRef()))
         ) as MutableRefObject<{[key: string]: MutableRefObject<InputFileComponent>}>;
 
-    const uploads = useSelector<UploadState, Upload[]>((state) => state.uploads);
+    const uploads = useSelector<UploadModule, Upload[]>((state) => state.upload.uploads);
     const dispatch = useDispatch();
 
     setTimeout(() => {
@@ -194,6 +195,7 @@ export const Form = () => {
                 'Vídeo salvo com sucesso',
                 {variant: 'success'}
             );
+            uploadFiles(data.data);
             id && resetForm(video);
             setTimeout(() => {
                 event ? (
@@ -218,6 +220,31 @@ export const Form = () => {
         genreRef.current.clear();
         categoryRef.current.clear();
         reset(data);
+    }
+
+    function uploadFiles(video) {
+        const files: FileInfo[] = fileFields
+            .filter(fileField => getValues()[fileField])
+            .map(fileField => ({fileField, file: getValues()[fileField] as File}));
+
+        if (!files.length) {
+            return;
+        }
+
+        dispatch(Creators.addUpload({video, files}));
+
+        snackbar.enqueueSnackbar('', {
+            key: 'snackbar-upload',
+            persist: true,
+            anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'right'
+            },
+            content: (key, message) => {
+                const id = key as any;
+                return <SnackbarUpload id={id}/>
+            }
+        });
     }
 
     return (
@@ -309,14 +336,6 @@ export const Form = () => {
                                 error={errors.categories}
                                 disabled={loading}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormHelperText>
-                                Escolha os gêneros do vídeos
-                            </FormHelperText>
-                            <FormHelperText>
-                                Escolha pelo menos uma categoria de cada gênero
-                            </FormHelperText>
                         </Grid>
                     </Grid>
                 </Grid>

@@ -66,6 +66,9 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>((props
                     error: error !== undefined
                 }}
             />
+            <FormHelperText style={{height: '24px'}}>
+                Escolha os gêneros do vídeos
+            </FormHelperText>
             <FormControl
                 margin={'normal'}
                 fullWidth
