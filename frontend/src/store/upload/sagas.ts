@@ -12,6 +12,7 @@ export function* uploadWatcherSaga() {
         const {payload} : AddUploadAction = yield take(newFilesChannel);
         for (const fileInfo of payload.files) {
             try {
+                // eslint-disable-next-line
                 const response = yield call(uploadFile, {video: payload.video, fileInfo});    
             } catch (error) {
                 console.log(error);
