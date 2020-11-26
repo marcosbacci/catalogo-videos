@@ -144,7 +144,7 @@ function findIndexUploadFile(state:Typings.UploadState, videoId, fileField) : {i
 
 function calculateGlobalProgress(files: Array<{progress}>) {
     const countFiles = files.length;
-    if (countFiles) {
+    if (!countFiles) {
         return 0;
     }
 

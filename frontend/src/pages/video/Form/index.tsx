@@ -22,8 +22,8 @@ import { createRef } from 'react';
 import { omit, zipObject } from 'lodash';
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError';
 import LoadingContext from '../../../components/Loading/LoadingContext';
-import { useDispatch, useSelector } from 'react-redux';
-import { FileInfo, Upload, UploadModule } from '../../../store/upload/types';
+import { useDispatch } from 'react-redux';
+import { FileInfo } from '../../../store/upload/types';
 import { Creators } from '../../../store/upload';
 import SnackbarUpload from '../../../components/SnackbarUpload';
 
@@ -121,23 +121,23 @@ export const Form = () => {
             zipObject(fileFields, fileFields.map(() => createRef()))
         ) as MutableRefObject<{[key: string]: MutableRefObject<InputFileComponent>}>;
 
-    const uploads = useSelector<UploadModule, Upload[]>((state) => state.upload.uploads);
+    // const uploads = useSelector<UploadModule, Upload[]>((state) => state.upload.uploads);
     const dispatch = useDispatch();
 
-    setTimeout(() => {
-        const obj: any = {
-            video: {
-                id: '1',
-                title: 'e o vento levou'
-            },
-            files: [
-                {file: new File([""], "teste.mp4")}
-            ]
-        };
-        dispatch(Creators.addUpload(obj));
-    }, 1000);
+    // setTimeout(() => {
+    //     const obj: any = {
+    //         video: {
+    //             id: '1',
+    //             title: 'e o vento levou'
+    //         },
+    //         files: [
+    //             {file: new File([""], "teste.mp4")}
+    //         ]
+    //     };
+    //     dispatch(Creators.addUpload(obj));
+    // }, 1000);
 
-    console.log(uploads);
+    // console.log(uploads);
 
     useEffect(() => {
         register({name: "thumb_file"});
@@ -180,7 +180,7 @@ export const Form = () => {
     []);
 
     async function onSubmit(formData, event) {
-        const sendData = omit(formData, ['cast_members', 'genres', 'categories']);
+        const sendData = omit(formData, [...fileFields, 'cast_members', 'genres', 'categories']);
         sendData['cast_members_id'] = formData['cast_members'].map(cast_member => cast_member.id);
         sendData['categories_id'] = formData['categories'].map(category => category.id);
         sendData['genres_id'] = formData['genres'].map(genre => genre.id);
@@ -188,7 +188,8 @@ export const Form = () => {
         try {
             const http = !video
             ? videoHttp.create(sendData)
-            : videoHttp.update(video.id, {...sendData, _method: 'PUT'}, {http: {usePost: true}});
+            //: videoHttp.update(video.id, {...sendData, _method: 'PUT'}, {http: {usePost: true}});
+            : videoHttp.update(video.id, {...sendData});
         
             const {data} = await http;
             snackbar.enqueueSnackbar(
