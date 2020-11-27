@@ -1,6 +1,6 @@
 import { FormControl, FormControlProps, FormHelperText, Typography } from '@material-ui/core';
 import * as React from 'react';
-import { useImperativeHandle } from 'react';
+import { useCallback, useImperativeHandle } from 'react';
 import { MutableRefObject } from 'react';
 import { useRef } from 'react';
 import AsyncAutocomplete, { AsyncAutocompleteComponent } from '../../../components/AsyncAutocomplete';
@@ -28,7 +28,7 @@ const CastMemberField = React.forwardRef<CastMemberFieldComponent, CastMemberFie
     const {addItem, removeItem} = useCollectionManager(castMembers, setCastMembers);
     const autocompleteRef = useRef() as MutableRefObject<AsyncAutocompleteComponent>;
     
-    function fetchOptions(searchText) {
+    const fetchOptions = useCallback((searchText) => {
         return autocompleteHttp(
             castMemberHttp.list({
                 queryParams: {
@@ -37,7 +37,7 @@ const CastMemberField = React.forwardRef<CastMemberFieldComponent, CastMemberFie
                 }
             })
         ).then(data => data.data)
-    }
+    }, [autocompleteHttp]);
 
     useImperativeHandle(ref, () => ({
         clear: () => autocompleteRef.current.clear()

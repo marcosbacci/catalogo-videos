@@ -42,7 +42,7 @@ export const Form = () => {
     useSnackbarFormError(formState.submitCount, errors);
 
     const classes = useStyles();
-    const snackbar = useSnackbar();
+    const {enqueueSnackbar} = useSnackbar();
     const history = useHistory();
     const {id} = useParams();
     const [genre, setGenre] = useState<{id: string} | null>(null);
@@ -85,7 +85,7 @@ export const Form = () => {
                 }
             } catch (error) {
                 console.error(error);
-                snackbar.enqueueSnackbar(
+                enqueueSnackbar(
                     "Não foi possível carregar as informações",
                     {variant: "error"}
                 )
@@ -95,9 +95,7 @@ export const Form = () => {
         }
         
         loadData();
-    },
-    // eslint-disable-next-line 
-    []);
+    }, [id, reset, enqueueSnackbar]);
 
     async function onSubmit(formData, event) {
         setLoading(true);
@@ -106,7 +104,7 @@ export const Form = () => {
                 ? genreHttp.create(formData)
                 : genreHttp.update(genre.id, formData);
             const {data} = await http;
-            snackbar.enqueueSnackbar(
+            enqueueSnackbar(
                 'Gênero salvo com sucesso',
                 {variant: 'success'}
             );
@@ -118,7 +116,7 @@ export const Form = () => {
             });
         } catch (error) {
             console.log(error);
-            snackbar.enqueueSnackbar(
+            enqueueSnackbar(
                 'Não foi possível salvar o gênero',
                 {variant: 'error'}
             );

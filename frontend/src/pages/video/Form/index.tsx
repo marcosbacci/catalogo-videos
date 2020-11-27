@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import videoHttp from '../../../util/http/video-http';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../../util/vendor/yup';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
 import SubmitActions from '../../../components/SubmitActions';
@@ -107,7 +107,7 @@ export const Form = () => {
     useSnackbarFormError(formState.submitCount, errors);
 
     const classes = useStyles();
-    const snackbar = useSnackbar();
+    const {enqueueSnackbar} = useSnackbar();
     const history = useHistory();
     const {id} = useParams();
     const [video, setVideo] = useState<Video | null>(null);
@@ -139,6 +139,16 @@ export const Form = () => {
 
     // console.log(uploads);
 
+    const resetForm = useCallback((data) => {
+        Object.keys(uploadsRef.current).forEach(
+            field => uploadsRef.current[field].current.clear()
+        );
+        castMemberRef.current.clear();
+        genreRef.current.clear();
+        categoryRef.current.clear();
+        reset(data);
+    }, [castMemberRef, genreRef, categoryRef, uploadsRef, reset]);
+
     useEffect(() => {
         register({name: "thumb_file"});
         register({name: "banner_file"});
@@ -161,23 +171,20 @@ export const Form = () => {
                 const {data} = await videoHttp.get(id);
                 if (isSubcribed) {
                     setVideo(data.data);
-                    reset(data.data);    
+                    resetForm(data.data);    
                 }
             } catch (error) {
                 console.error(error);
-                snackbar.enqueueSnackbar(
+                enqueueSnackbar(
                     "Não foi possível carregar as informações",
                     {variant: "error"}
                 )
             }
         })();
-
         return () => {
             isSubcribed = false;
         }
-    },
-    // eslint-disable-next-line 
-    []);
+    }, [id, resetForm, enqueueSnackbar]);
 
     async function onSubmit(formData, event) {
         const sendData = omit(formData, [...fileFields, 'cast_members', 'genres', 'categories']);
@@ -192,7 +199,7 @@ export const Form = () => {
             : videoHttp.update(video.id, {...sendData});
         
             const {data} = await http;
-            snackbar.enqueueSnackbar(
+            enqueueSnackbar(
                 'Vídeo salvo com sucesso',
                 {variant: 'success'}
             );
@@ -206,21 +213,11 @@ export const Form = () => {
             });
         } catch (error) {
             console.log(error);
-            snackbar.enqueueSnackbar(
+            enqueueSnackbar(
                 'Não foi possível salvar o vídeo',
                 {variant: 'error'}
             );
         }
-    }
-
-    function resetForm(data) {
-        Object.keys(uploadsRef.current).forEach(
-            field => uploadsRef.current[field].current.clear()
-        );
-        castMemberRef.current.clear();
-        genreRef.current.clear();
-        categoryRef.current.clear();
-        reset(data);
     }
 
     function uploadFiles(video) {
@@ -234,7 +231,7 @@ export const Form = () => {
 
         dispatch(Creators.addUpload({video, files}));
 
-        snackbar.enqueueSnackbar('', {
+        enqueueSnackbar('', {
             key: 'snackbar-upload',
             persist: true,
             anchorOrigin: {
