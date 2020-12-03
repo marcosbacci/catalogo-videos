@@ -33,9 +33,9 @@ steps:
   name: 'gcr.io/cloud-builders/docker'
   args: ['exec', '-t', 'app', 'cp', '/var/www/backend/.env.example', '/var/www/backend/.env']
 
-- id: "Copiar o arquivo .env.testing"
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'cp', '/var/www/backend/.env.testing.example', '/var/www/backend/.env.testing']
+# - id: "Copiar o arquivo .env.testing"
+#   name: 'gcr.io/cloud-builders/docker'
+#   args: ['exec', '-t', 'app', 'cp', '/var/www/backend/.env.testing.example', '/var/www/backend/.env.testing']
 
 - id: "Rodar um artisan key:generate"
   name: 'gcr.io/cloud-builders/docker'
