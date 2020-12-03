@@ -14,7 +14,7 @@ services:
             - TESTING_PROD=true
         container_name: app
         volumes:
-            - ./backend:/var/www
+            - .:/var/www
         networks:
             - app-network
         depends_on:

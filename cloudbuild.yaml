@@ -23,7 +23,7 @@ steps:
 
 - id: "Chown in /var/www"
   name: 'gcr.io/cloud-builders/docker'
-  args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
+  args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data', '/var/www']
 
 - id: "Executar o compose"
   name: 'gcr.io/cloud-builders/docker'
