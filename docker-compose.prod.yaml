@@ -13,6 +13,7 @@ services:
             - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/curso-micro-videos
             - TESTING_PROD=true
         container_name: app
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 40s
         volumes:
             - .:/var/www
         networks:
