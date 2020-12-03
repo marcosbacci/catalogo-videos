@@ -3,10 +3,9 @@ version: '3'
 services:
 
     app:
-        build: .
-        # build:
-            # context: .
-            # dockerfile: Dockerfile.prod
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
         environment:
             - GOOGLE_CLOUD_PROJECT_ID=curso-285120
             - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
