@@ -13,7 +13,7 @@ steps:
 
 - id: "Executar o docker-compose"
   #name: 'gcr.io/$PROJECT_ID/docker-compose'
-  name: 'gcr.io/cloud-builders/docker-compose'
+  name: 'gcr.io/cloud-builders-community/docker-compose'
   args: ['-f', 'docker-compose.prod.yaml', 'up', '-d']
   env:
     - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
