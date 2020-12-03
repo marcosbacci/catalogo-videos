@@ -3,9 +3,10 @@ version: '3'
 services:
 
     app:
-        build:
-            context: .
-            dockerfile: Dockerfile.prod
+        build: .
+        # build:
+            # context: .
+            # dockerfile: Dockerfile.prod
         environment:
             - GOOGLE_CLOUD_PROJECT_ID=curso-285120
             - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
@@ -13,6 +14,7 @@ services:
             - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/curso-micro-videos
             - TESTING_PROD=true
         container_name: app
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 40s
         volumes:
             - .:/var/www
         networks:
