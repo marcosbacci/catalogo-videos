@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "bschmitt/laravel-amqp": "^2.0",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
         "laravel/framework": "^6.0",
@@ -16,7 +17,9 @@
         "laravel/tinker": "^1.0",
         "laravel/ui": "^1.0",
         "superbalist/laravel-google-cloud-storage": "^2.2",
-        "tucker-eric/eloquentfilter": "^2.4"
+        "tucker-eric/eloquentfilter": "^2.4",
+        "tymon/jwt-auth": "^1.0",
+        "vizir/laravel-keycloak-web-guard": "^2.3"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",

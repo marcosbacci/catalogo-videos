@@ -37,8 +37,8 @@ return [
 
     'guards' => [
         'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
+            'driver' => 'keycloak-web',
+            'provider' => 'keycloak-user',
         ],
 
         'api' => [
@@ -71,6 +71,10 @@ return [
             'model' => App\User::class,
         ],
 
+        'keycloak-user' => [
+            'driver' => 'keycloak-users',
+            'model' => Vizir\KeycloakWebGuard\Models\KeycloakUser::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
