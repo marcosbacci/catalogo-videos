@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SerializeDateToIso8601;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -52,7 +53,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Video extends Model
 {
-    use SoftDeletes, Traits\Uuid, Traits\UploadFiles;
+    use SoftDeletes, Traits\Uuid, Traits\UploadFiles, SerializeDateToIso8601;
 
     const RATING_LIST = ['L', '10', '12', '14', '16', '18'];
 
