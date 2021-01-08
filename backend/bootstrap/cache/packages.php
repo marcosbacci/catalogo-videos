@@ -17,6 +17,13 @@
       'Amqp' => 'Bschmitt\\Amqp\\Facades\\Amqp',
     ),
   ),
+  'chelout/laravel-relationship-events' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Chelout\\RelationshipEvents\\RelationshipEventsServiceProvider',
+    ),
+  ),
   'facade/ignition' => 
   array (
     'providers' => 

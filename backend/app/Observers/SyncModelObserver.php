@@ -57,6 +57,25 @@ class SyncModelObserver
         }
     }
 
+    public function belongsToManyAttached($relation, $model, $ids)
+    {
+        $modelName = $this->getModelName($model);
+        $relationName = Str::snake($relation);
+        $routingKey = "model.${modelName}_${relationName}.attached";
+        $data = [
+            'id' => $model->id,
+            'relation_ids' => $ids
+        ];
+
+        try {
+            $this->publish($routingKey, $data);
+        } catch (\Exception $exception) {
+            $id = $model->id;
+            $myException = new \Exception("The model $modelName with ID $id not synced on attached", 0, $exception);
+            report($myException);
+        }
+    }
+
     public function restored(Model $model)
     {
         //
@@ -91,5 +110,17 @@ class SyncModelObserver
                 'exchange' => 'amq.topic'
             ]
         );
+    }
+
+    protected function reportException(array $params)
+    {
+        list(
+            'modelName' => $modelName,
+            'id' => $id,
+            'action' => $action,
+            'exception' => $exception
+        ) = $params;
+        $myException = new \Exception("The model $modelName with ID $id not synced on $action", 0, $exception);
+        report($myException);
     }
 }
