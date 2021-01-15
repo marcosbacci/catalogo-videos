@@ -25,6 +25,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        \Auth::extend('keycloak', function ($app, $name, $config) {
+            return new \App\Auth\KeycloakGuard(
+                $app['tymon.jwt'],
+                $app['request']
+            );
+        });
     }
 }
