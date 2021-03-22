@@ -83,7 +83,6 @@ const columnsDefinitions: TableColumn[] = [
 const rowPerPage = 15;
 const rowsPerPageOptions = [15, 25, 50];
 const Table = () => {
-
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
     const [data, setData] = useState<Category[]>([]);
