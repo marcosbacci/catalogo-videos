@@ -9,7 +9,7 @@ import { Location } from 'history';
 import routes from '../routes';
 import RouteParser from 'route-parser';
 import { Box, Container } from '@material-ui/core';
-import { useKeycloak } from '@react-keycloak/web';
+import { useHasRealmRole } from '../hooks/useHasRole';
 
 const breadcrumbNameMap: { [key: string]: string } = {};
 routes.forEach(route => breadcrumbNameMap[route.path as string] = route.label);
@@ -37,7 +37,7 @@ const LinkRouter = (props: LinkRouterProps) => <Link {...props} component={Route
 
 export default function Breadcrumbs() {
   const classes = useStyles();
-  const {keycloak} = useKeycloak();
+  const hasCatalogAdmin = useHasRealmRole('catalog-admin');
 
   function makeBreadcrumb(location: Location) {
       const pathnames = location.pathname.split('/').filter((x) => x);
@@ -69,7 +69,7 @@ export default function Breadcrumbs() {
   }
 
   return (
-    keycloak.authenticated ? <Container>
+    hasCatalogAdmin ? <Container>
       <Box paddingTop={2} paddingBottom={1}>
         <Route>
           {

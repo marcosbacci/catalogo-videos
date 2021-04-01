@@ -30,7 +30,7 @@ services:
             - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
         networks:
             - app-network
-            - rabbitmq_codeflix
+            #- rabbitmq_codeflix
         depends_on:
             - db
             - redis
@@ -84,5 +84,5 @@ services:
 networks:
     app-network:
         driver: bridge
-    rabbitmq_codeflix:
-        external: true
+    # rabbitmq_codeflix:
+    #     external: true

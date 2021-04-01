@@ -3,7 +3,7 @@ import { Divider, IconButton, Link as MuiLink, Menu as MuiMenu, MenuItem } from 
 import MenuIcon from '@material-ui/icons/Menu';
 import routes, {MyRouteProps} from '../../routes';
 import { Link } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
+import { useHasRealmRole } from '../../hooks/useHasRole';
 
 const listRoutes = {
     'dashboard': 'dashboard',
@@ -17,14 +17,14 @@ const listRoutes = {
 const menuRoutes = routes.filter(route => Object.keys(listRoutes).includes(route.name));
 
 export const Menu = () => {
-    const {keycloak, initialized} = useKeycloak();
+    const hasCatalogAdmin = useHasRealmRole('catalog-admin');
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
     const handleOpen = (event:any) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
-    if (!initialized || !keycloak.authenticated) {
+    if (!hasCatalogAdmin) {
         return null;
     }
 
